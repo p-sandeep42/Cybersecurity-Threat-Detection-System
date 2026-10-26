@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<p class="eyebrow">{{ alert.rule_id }}/v{{ alert.rule_version }} · {{ alert.status }}</p>
+<h1>{{ alert.reason }}</h1>
+<p><span class="badge {{ alert.severity|lower }}">{{ alert.severity }} · {{ alert.score }}</span> <code>{{ alert.entity_key }}</code></p>
+<p class="muted">{{ alert.episode_start }} to {{ alert.episode_end }} UTC · {{ events|length }} contributing events</p>
+<p>Matched thresholds: <code>{{ alert.thresholds|tojson }}</code>. This is a suspicious pattern requiring review.</p>
+<section class="panel"><h2>Investigation</h2>
+  <form method="post" class="inline">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="status">
+    <label>Status<select name="status">{% for status in statuses %}<option {{ 'selected' if status == alert.status }}>{{ status }}</option>{% endfor %}</select></label>
+    <button>Update status</button>
+  </form>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="note">
+    <label>Investigation note<textarea name="body" maxlength="2000" rows="3" required></textarea></label>
+    <button class="secondary">Add note</button>
+  </form>
+  {% for note in notes %}<blockquote>{{ note.body }}<br><small class="muted">{{ note.created_at }}</small></blockquote>{% endfor %}
+</section>
+<h2>Evidence timeline</h2>{% include 'event_table.html' %}
+<h2>Audit history</h2><ul>{% for entry in audit %}<li>{{ entry.created_at }} · {{ entry.action }}</li>{% else %}<li>No investigation changes yet.</li>{% endfor %}</ul>
+{% endblock %}

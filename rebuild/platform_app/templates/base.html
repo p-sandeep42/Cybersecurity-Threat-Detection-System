@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ThreatWatch{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header>
+    <a class="brand" href="{{ url_for('dashboard.applications') }}">◈ ThreatWatch</a>
+    <span class="muted">Authentication security · Local demonstration</span>
+    {% if current_user.is_authenticated %}
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="secondary">Sign out</button>
+    </form>
+    {% endif %}
+  </header>
+  {% if application is defined %}
+  <nav aria-label="Application navigation">
+    <a href="{{ url_for('dashboard.applications') }}">Applications</a>
+    <strong>{{ application.name }}</strong>
+    <a href="{{ url_for('dashboard.metrics', app_id=application.id) }}">Overview</a>
+    <a href="{{ url_for('dashboard.events', app_id=application.id) }}">Events</a>
+    <a href="{{ url_for('dashboard.alerts', app_id=application.id) }}">Alerts</a>
+    <a href="{{ url_for('dashboard.setup', app_id=application.id) }}">Connection settings</a>
+  </nav>
+  {% endif %}
+  <main id="main">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+    <p role="status" class="notice {{ category }}">{{ message }}</p>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>Evidence-based investigation. Alerts indicate suspicious patterns, not confirmed attacks. All times UTC.</footer>
+</body>
+</html>

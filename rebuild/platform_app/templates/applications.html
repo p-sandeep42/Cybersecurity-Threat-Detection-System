@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<p class="eyebrow">YOUR WORKSPACE</p><h1>Applications</h1>
+<p class="muted">Connect a backend to start collecting authentication events.</p>
+<section class="grid">
+  {% for application in applications %}
+  <article class="panel">
+    <h2><a href="{{ url_for('dashboard.metrics', app_id=application.id) }}">{{ application.name }}</a></h2>
+    <p class="muted">Created {{ application.created_at }}</p>
+    <a href="{{ url_for('dashboard.setup', app_id=application.id) }}">Integration settings →</a>
+  </article>
+  {% else %}<p class="notice">No applications yet. Create your first connection below.</p>{% endfor %}
+</section>
+<section class="panel narrow">
+  <h2>Add an application</h2>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Application name <input name="name" maxlength="80" required placeholder="Demo bookstore"></label>
+    <button>Create application</button>
+  </form>
+</section>
+{% endblock %}

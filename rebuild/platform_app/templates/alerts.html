@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<p class="eyebrow">INVESTIGATION QUEUE</p><h1>Alerts</h1>
+<p class="muted">Priority scores are rule-based triage values, not probabilities of an attack.</p>
+{% include 'filters.html' %}
+<div class="table-wrap"><table><thead><tr><th>Detection</th><th>Entity</th><th>Priority</th><th>Status</th><th>Last evidence (UTC)</th></tr></thead>
+<tbody>{% for alert in alerts %}<tr>
+  <td><a href="{{ url_for('dashboard.alert_detail', app_id=application.id, alert_id=alert.id) }}">{{ alert.reason }}</a><br><small>{{ alert.rule_id }}/v{{ alert.rule_version }}</small></td>
+  <td><code>{{ alert.entity_key }}</code></td>
+  <td><span class="badge {{ alert.severity|lower }}">{{ alert.severity }} · {{ alert.score }}</span></td>
+  <td>{{ alert.status }}</td><td>{{ alert.episode_end }}</td>
+</tr>{% else %}<tr><td colspan="5">No matching alerts. This does not establish that all activity is safe.</td></tr>{% endfor %}</tbody></table></div>
+{% include 'pagination.html' %}
+{% endblock %}

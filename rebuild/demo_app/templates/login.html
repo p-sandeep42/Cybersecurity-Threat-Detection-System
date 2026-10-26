@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Papertrail · Demo bookstore</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><main>
+  <p class="eyebrow">PAPERTRAIL / SYNTHETIC DEMO</p><h1>A good book.<br>A fresh perspective.</h1>
+  <p>Sign into the demonstration bookstore. The synthetic account name is <code>reader</code>; use the password configured by your local operator.</p>
+  {% for message in get_flashed_messages() %}<p role="status" class="notice">{{ message }}</p>{% endfor %}
+  {% if signed_in %}
+  <h2>Welcome back, reader.</h2>
+  <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button>Sign out</button></form>
+  {% else %}
+  <form method="post" action="{{ url_for('login') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Username<input name="username" autocomplete="username" maxlength="128" required></label>
+    <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+    <button>Sign in</button>
+  </form>
+  {% endif %}
+  <aside>Login outcomes, a pseudonymous account identifier, source IP, and backend duration are sent to your local ThreatWatch instance. Passwords are never included. Browser interaction collection is not enabled in this milestone.</aside>
+</main></body></html>

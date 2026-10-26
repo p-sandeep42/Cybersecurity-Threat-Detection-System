@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<p class="eyebrow">INTEGRATION</p><h1>Connect {{ application.name }}</h1>
+{% if secret %}
+<section class="panel"><h2>Save your ingestion key</h2>
+  <p>This key is shown once. Store it in your backend environment. Never put it in browser code.</p>
+  <code class="secret">{{ secret }}</code>
+  <p class="muted">Navigating away hides it. If lost, rotate the key. Refreshing a submitted form may repeat the operation.</p>
+</section>
+{% endif %}
+<section class="panel">
+  <h2>Three steps to your first event</h2>
+  <ol>
+    <li>Set <code>THREATWATCH_INGESTION_KEY</code> in your demo backend's environment.</li>
+    <li>Run the demo on port 5001 and attempt a login. Its background sender reports the outcome.</li>
+    <li>Open Overview to verify the last received time, then Events to inspect the record.</li>
+  </ol>
+  <p>HTTP endpoint: <code>POST http://127.0.0.1:5000/api/v1/events</code></p>
+  <p>Headers: <code>Authorization: Bearer &lt;key&gt;</code> and <code>Content-Type: application/json</code>.</p>
+  <p>Use the complete event contract in <code>docs/plan/02-architecture.md</code>. The backend must derive outcomes and source IPs. Do not send passwords or tokens.</p>
+</section>
+<section class="panel">
+  <h2>Key lifecycle</h2>
+  {% for key in keys %}<p><code>{{ key.prefix }}…</code> · {{ 'Revoked' if key.revoked_at else 'Active' }} · {{ key.created_at }}</p>{% endfor %}
+  {% for action in ['rotate', 'revoke'] %}
+  <form class="inline" method="post" action="{{ url_for('dashboard.manage_keys', app_id=application.id, action=action) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label><input type="checkbox" name="confirm" value="yes" required> Immediately invalidate existing keys</label>
+    <button class="secondary">{{ action|title }} key</button>
+  </form>
+  {% endfor %}
+</section>
+<details class="panel"><summary>Delete application and all its data</summary>
+  <p>This removes events, alerts, notes and keys permanently.</p>
+  <form method="post" action="{{ url_for('dashboard.delete_application', app_id=application.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Type {{ application.name }} to confirm <input name="confirm_name" required></label>
+    <button class="danger">Delete application</button>
+  </form>
+</details>
+{% endblock %}

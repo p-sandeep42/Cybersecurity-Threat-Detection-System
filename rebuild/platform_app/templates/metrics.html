@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<p class="eyebrow">APPLICATION OVERVIEW</p><h1>{{ application.name }}</h1>
+<p class="muted">{% if last_received %}Last event received: {{ last_received }} UTC{% else %}No events received. Open Connection settings to integrate your backend.{% endif %}</p>
+{% include 'filters.html' %}
+<section class="grid">{% for label, value in stats.items() %}<article class="panel metric"><span>{{ label }}</span><strong>{{ value }}</strong></article>{% endfor %}</section>
+<section class="panel"><h2>Backend response duration · /login</h2>
+<p>p50: <strong>{{ p50 if p50 is not none else 'N/A' }}</strong> ms · p95: <strong>{{ p95 if p95 is not none else 'N/A' }}</strong> ms</p>
+<p class="muted">{{ sample_count }} samples{% if sample_count < 20 %} · Small sample{% endif %}. Backend handling time excludes network delivery. Latency does not increase threat scores.</p>
+</section>
+<p class="muted">Browser interaction collection and automation indicators are a later milestone. Refresh this page to update the overview.</p>
+{% endblock %}

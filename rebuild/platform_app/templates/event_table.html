@@ -1,0 +1,9 @@
+<div class="table-wrap"><table>
+  <thead><tr><th scope="col">Event / received time (UTC)</th><th scope="col">Account</th><th scope="col">Source IP</th><th scope="col">Outcome</th><th scope="col">Backend time</th><th scope="col">Browser summary</th></tr></thead>
+  <tbody>{% for event in events %}<tr>
+    <td>{{ event.occurred_at }}<br><small class="muted">Received {{ event.received_at }}</small></td>
+    <td><code>{{ event.subject_id }}</code></td><td><code>{{ event.source_ip }}</code></td>
+    <td>{{ event.outcome }}</td><td>{{ '%.2f'|format(event.response_duration_ms) }} ms</td>
+    <td>{% if event.payload.interaction %}<details><summary>Browser-reported, unverified</summary><pre>{{ event.payload.interaction|tojson(indent=2) }}</pre></details>{% else %}Not available{% endif %}</td>
+  </tr>{% else %}<tr><td colspan="6">No matching events. Send a demo login or adjust the time range.</td></tr>{% endfor %}</tbody>
+</table></div>

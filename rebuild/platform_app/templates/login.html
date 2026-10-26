@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="login panel">
+  <p class="eyebrow">OWNER ACCESS</p>
+  <h1>Investigate with evidence.</h1>
+  <p class="muted">Sign in to view your applications and authentication alerts.</p>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Login <input name="login" autocomplete="username" maxlength="128" required></label>
+    <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+    <button>Sign in</button>
+  </form>
+  <p class="muted">Accounts are provisioned by your local administrator.</p>
+</section>
+{% endblock %}
