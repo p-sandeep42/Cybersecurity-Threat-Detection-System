@@ -1,0 +1,157 @@
+{
+  "fixture_sha256": "8e08702b70cd412a86b0071a6e76e5f9479601cab3fb0a995ba8d49cf7e95dad",
+  "scenarios": 15,
+  "events": 130,
+  "rules": {
+    "AUTH-001": {
+      "TP": 3,
+      "FP": 0,
+      "FN": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "AUTH-002": {
+      "TP": 1,
+      "FP": 1,
+      "FN": 0,
+      "precision": 0.5,
+      "recall": 1.0
+    },
+    "AUTH-003": {
+      "TP": 1,
+      "FP": 0,
+      "FN": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "BOT-001": {
+      "TP": 1,
+      "FP": 1,
+      "FN": 2,
+      "precision": 0.5,
+      "recall": 0.3333
+    }
+  },
+  "details": [
+    {
+      "scenario": "normal-successes",
+      "expected": [],
+      "observed": [],
+      "note": ""
+    },
+    {
+      "scenario": "ordinary-corrections",
+      "expected": [],
+      "observed": [],
+      "note": ""
+    },
+    {
+      "scenario": "brute-force",
+      "expected": [
+        "AUTH-001"
+      ],
+      "observed": [
+        "AUTH-001"
+      ],
+      "note": ""
+    },
+    {
+      "scenario": "password-spray",
+      "expected": [
+        "AUTH-002"
+      ],
+      "observed": [
+        "AUTH-002"
+      ],
+      "note": ""
+    },
+    {
+      "scenario": "success-after-failures",
+      "expected": [
+        "AUTH-001",
+        "AUTH-003"
+      ],
+      "observed": [
+        "AUTH-001",
+        "AUTH-003"
+      ],
+      "note": ""
+    },
+    {
+      "scenario": "shuffled-brute-force",
+      "expected": [
+        "AUTH-001"
+      ],
+      "observed": [
+        "AUTH-001"
+      ],
+      "note": ""
+    },
+    {
+      "scenario": "rapid-automation",
+      "expected": [
+        "BOT-001"
+      ],
+      "observed": [
+        "BOT-001"
+      ],
+      "note": ""
+    },
+    {
+      "scenario": "touch-visitor",
+      "expected": [],
+      "observed": [],
+      "note": ""
+    },
+    {
+      "scenario": "keyboard-visitor",
+      "expected": [],
+      "observed": [],
+      "note": ""
+    },
+    {
+      "scenario": "single-autofill",
+      "expected": [],
+      "observed": [],
+      "note": ""
+    },
+    {
+      "scenario": "hidden-tab",
+      "expected": [],
+      "observed": [],
+      "note": ""
+    },
+    {
+      "scenario": "shared-office-benign-failures",
+      "expected": [],
+      "observed": [
+        "AUTH-002"
+      ],
+      "note": "Distinct legitimate users mistype passwords behind one shared IP; expected false alarm."
+    },
+    {
+      "scenario": "approved-fast-automation",
+      "expected": [],
+      "observed": [
+        "BOT-001"
+      ],
+      "note": "Authorized test automation; behavior matches heuristic despite benign ground truth."
+    },
+    {
+      "scenario": "bot-without-telemetry",
+      "expected": [
+        "BOT-001"
+      ],
+      "observed": [],
+      "note": "Stipulated automation omits browser data; expected miss."
+    },
+    {
+      "scenario": "bot-spoofing-slow-timing",
+      "expected": [
+        "BOT-001"
+      ],
+      "observed": [],
+      "note": "Stipulated automation forges slow durations; expected miss."
+    }
+  ]
+}

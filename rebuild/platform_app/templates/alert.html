@@ -5,6 +5,9 @@
 <p><span class="badge {{ alert.severity|lower }}">{{ alert.severity }} · {{ alert.score }}</span> <code>{{ alert.entity_key }}</code></p>
 <p class="muted">{{ alert.episode_start }} to {{ alert.episode_end }} UTC · {{ events|length }} contributing events</p>
 <p>Matched thresholds: <code>{{ alert.thresholds|tojson }}</code>. This is a suspicious pattern requiring review.</p>
+{% if alert.rule_id == 'BOT-001' %}
+<p class="notice">Experimental indicator: repeated rapid submissions may also come from legitimate automation or autofill. Browser measurements can be forged. No blocking is performed.</p>
+{% endif %}
 <section class="panel"><h2>Investigation</h2>
   <form method="post" class="inline">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="status">

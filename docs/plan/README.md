@@ -1,6 +1,6 @@
 # ThreatWatch planning package
 
-Status: proposed implementation specification; no application rebuild has started.
+Status: planning baseline. The local P0/P1 implementation now lives in [rebuild](../../rebuild/README.md); measured results and remaining production limitations are recorded there.
 Prepared: 25 October 2026. Working name: ThreatWatch.
 
 ## Read in this order

@@ -78,9 +78,7 @@ def check_connection() -> int:
                     "Re-enter the ingestion key and retry. Do not include hidden paste characters."
                 )
             else:
-                print(
-                    "Non-JSON rejection persists on a direct connection; check port 5000."
-                )
+                print("Non-JSON rejection persists on a direct connection; check port 5000.")
         else:
             print("Platform rejected the request. Restart port 5000 with current code.")
     else:

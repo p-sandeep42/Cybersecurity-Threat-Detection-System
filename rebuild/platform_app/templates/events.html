@@ -2,6 +2,9 @@
 {% block content %}
 <p class="eyebrow">AUTHENTICATION STREAM</p><h1>Events</h1>
 {% include 'filters.html' %}
+<div id="live-content" data-refresh-area>
 {% include 'event_table.html' %}
 {% include 'pagination.html' %}
+</div>
+{% include 'refresh.html' %}
 {% endblock %}

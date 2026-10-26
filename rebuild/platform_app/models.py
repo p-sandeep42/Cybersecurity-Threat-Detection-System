@@ -54,6 +54,7 @@ class Event(Base):
         UniqueConstraint("app_id", "event_id"),
         Index("ix_event_subject_time", "app_id", "subject_id", "occurred_at"),
         Index("ix_event_ip_time", "app_id", "source_ip", "occurred_at"),
+        Index("ix_event_session_time", "app_id", "session_id", "occurred_at"),
     )
 
     id: Mapped[str] = mapped_column(primary_key=True, default=new_id)
@@ -119,3 +120,16 @@ class AuditEntry(Base):
     target_id: Mapped[str]
     action: Mapped[str]
     created_at: Mapped[str] = mapped_column(default=utc_now)
+
+
+class IngestionReceipt(Base):
+    """Minimal delivery outcome; deliberately stores no payload, identity or key."""
+
+    __tablename__ = "ingestion_receipts"
+    __table_args__ = (Index("ix_receipt_app_time", "app_id", "received_at"),)
+
+    id: Mapped[str] = mapped_column(primary_key=True, default=new_id)
+    app_id: Mapped[str] = mapped_column(ForeignKey("applications.id", ondelete="CASCADE"))
+    received_at: Mapped[str] = mapped_column(default=utc_now)
+    outcome: Mapped[str]
+    http_status: Mapped[int]

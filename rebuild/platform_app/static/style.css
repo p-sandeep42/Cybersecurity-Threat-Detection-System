@@ -37,6 +37,11 @@ td code { overflow-wrap: anywhere; }
 .badge { padding: 4px 9px; border-radius: 5px; display: inline-block; white-space: nowrap; }
 .high { background: #49381e; color: #ffce81; }
 .critical { background: #4b2330; color: #ffb1bf; }
+.medium { background: #213e54; color: #a7d9ff; }
+.refresh-controls { margin: 24px 0; color: var(--muted); font-size: 14px; }
+.timing-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.timing-grid dt { font-weight: 700; }
+.timing-grid dd { margin: 8px 0; }
 .notice { padding: 16px; border-left: 3px solid var(--accent); background: var(--panel); }
 .error { border-color: #ffb1bf; }
 .secret { display: block; padding: 16px; border: 1px dashed var(--accent); overflow-wrap: anywhere; }

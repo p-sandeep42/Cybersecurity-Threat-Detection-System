@@ -32,6 +32,18 @@ RULES = {
         "Successful login after failures",
         {"failures": 5, "window_seconds": 600},
     ),
+    "BOT-001": (
+        40,
+        "Medium",
+        "Rapid repeated submissions — possible automation",
+        {
+            "attempts": 10,
+            "summaries": 10,
+            "window_seconds": 60,
+            "fast_submit_ms": 500,
+            "fast_percent": 80,
+        },
+    ),
 }
 
 
@@ -44,9 +56,11 @@ def evaluate(events: list[dict]) -> list[Episode]:
     ordered = sorted(events, key=lambda item: (item["occurred_at"], item["event_id"]))
     by_subject = defaultdict(list)
     by_ip = defaultdict(list)
+    by_session = defaultdict(list)
     for item in ordered:
         by_subject[item["subject_id"]].append(item)
         by_ip[item["source_ip"]].append(item)
+        by_session[item["session_id"]].append(item)
 
     candidates = defaultdict(list)
     for subject, items in by_subject.items():
@@ -79,6 +93,28 @@ def evaluate(events: list[dict]) -> list[Episode]:
             window = [event for _, event in failures]
             if len({event["subject_id"] for event in window}) >= 10:
                 candidates[("AUTH-002", address)].append(window)
+
+    for session_id, items in by_session.items():
+        window = deque()
+        for item in items:
+            current = datetime.fromisoformat(item["occurred_at"])
+            while window and current - window[0][0] > timedelta(seconds=60):
+                window.popleft()
+            window.append((current, item))
+            summaries = [
+                event["interaction"]
+                for _, event in window
+                if event.get("interaction")
+                and event["interaction"]["consent"] is True
+                and not event["interaction"]["visibility_interrupted"]
+            ]
+            fast_count = sum(summary["submit_elapsed_ms"] <= 500 for summary in summaries)
+            if (
+                len(window) >= 10
+                and len(summaries) >= 10
+                and fast_count * 100 >= 80 * len(summaries)
+            ):
+                candidates[("BOT-001", session_id)].append([event for _, event in window])
 
     lookup = {item["event_id"]: item for item in ordered}
     episodes = []

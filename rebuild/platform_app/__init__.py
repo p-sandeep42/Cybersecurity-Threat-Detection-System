@@ -44,11 +44,15 @@ def create_app(test_config=None):
     from platform_app.auth import create_owner
     from platform_app.dashboard import bp as dashboard_bp
     from platform_app.ingestion import bp as ingestion_bp
+    from platform_app.receipts import record_outcome
+    from platform_app.retention import purge_data
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(ingestion_bp)
     app.cli.add_command(create_owner)
+    app.cli.add_command(purge_data)
+    app.after_request(record_outcome)
 
     @app.cli.command("init-db")
     def init_db():

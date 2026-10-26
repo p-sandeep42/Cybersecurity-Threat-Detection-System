@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "Keyboard-only summary",
+    "Touch summary",
+    "Hidden events ignored",
+    "Visibility-interrupted interval labeled",
+    "Cached-page opt-out preserved",
+    "Refresh paused when hidden",
+    "Expired-session refresh stops"
+  ],
+  "result": "passed"
+}

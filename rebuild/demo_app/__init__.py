@@ -3,16 +3,19 @@
 import atexit
 import hashlib
 import hmac
+import json
 import os
 import time
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_wtf.csrf import CSRFProtect
+from pydantic import ValidationError
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from demo_app.sender import EventSender
+from platform_app.schemas import Interaction
 
 
 def create_app(test_config=None):
@@ -65,6 +68,15 @@ def create_app(test_config=None):
             password = request.form.get("password", "")
             password_valid = check_password_hash(password_hash, password)
             success = username == "reader" and password_valid
+            # Client data can supply context, never the outcome or account identity.
+            # Invalid telemetry is omitted; authentication must still work.
+            interaction = None
+            raw_summary = request.form.get("interaction", "")
+            if raw_summary:
+                try:
+                    interaction = Interaction.model_validate(json.loads(raw_summary)).model_dump()
+                except (ValueError, ValidationError):
+                    app.logger.warning("Invalid browser summary omitted from demo login event")
             if success:
                 session["signed_in"] = True
             else:
@@ -85,7 +97,7 @@ def create_app(test_config=None):
                 "session_id": session["telemetry_id"],
                 "route": "/login",
                 "response_duration_ms": round((time.perf_counter() - g.request_started) * 1000, 2),
-                "interaction": None,
+                "interaction": interaction,
             }
             sender.enqueue(event)
             flash("Signed in successfully." if success else "Invalid username or password.")
@@ -96,6 +108,33 @@ def create_app(test_config=None):
     def logout():
         session.clear()
         return redirect(url_for("login"))
+
+    def require_local_operator():
+        # Aggregate sender diagnostics are for a signed-in local demo operator.
+        # Never trust forwarded headers for this boundary.
+        from ipaddress import ip_address
+
+        if not session.get("signed_in") or not ip_address(request.remote_addr).is_loopback:
+            abort(403)
+
+    @app.get("/monitoring")
+    def monitoring():
+        require_local_operator()
+        return render_template(
+            "monitoring.html",
+            counters=sender.snapshot(),
+            queue_size=sender.queue.qsize(),
+            worker_alive=bool(sender.worker and sender.worker.is_alive()),
+        )
+
+    @app.get("/monitoring/status")
+    def monitoring_status():
+        require_local_operator()
+        return jsonify(
+            counters=sender.snapshot(),
+            queue_size=sender.queue.qsize(),
+            worker_alive=bool(sender.worker and sender.worker.is_alive()),
+        )
 
     @app.cli.command("sender-info")
     def sender_info():

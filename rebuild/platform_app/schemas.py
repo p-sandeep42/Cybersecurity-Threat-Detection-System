@@ -23,6 +23,14 @@ class Interaction(BaseModel):
     submit_elapsed_ms: Duration
     visibility_interrupted: bool
 
+    @field_validator("version", "consent", mode="before")
+    @classmethod
+    def exact_literal_types(cls, value, info):
+        expected = int if info.field_name == "version" else bool
+        if type(value) is not expected:
+            raise ValueError("Invalid version or consent type")
+        return value
+
     @model_validator(mode="after")
     def validate_timing(self):
         if type(self.version) is not int or type(self.consent) is not bool:

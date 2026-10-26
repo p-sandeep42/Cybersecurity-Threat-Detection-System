@@ -1,0 +1,19 @@
+{
+  "python": "3.13.0",
+  "os": "Windows-10-10.0.19045-SP0",
+  "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+  "logical_cpus": 8,
+  "seed_events": 10000,
+  "requests": 300,
+  "scheduled_rate_per_second": 5,
+  "elapsed_seconds": 59.89,
+  "achieved_rate": 5.01,
+  "ingestion_p50_ms": 81.59,
+  "ingestion_p95_ms": 104.22,
+  "dashboard_samples": 30,
+  "dashboard_p95_ms": 485.93,
+  "http_errors": [],
+  "ingestion_target_met": true,
+  "dashboard_target_met": true,
+  "method": "Real Requests-to-Waitress HTTP; single SQLite process; 10,000 successes sharing one IP; 200 subjects; unique sessions; rate limiting disabled only in the disposable lab because the production 120/minute limit is below the 300/minute benchmark load."
+}

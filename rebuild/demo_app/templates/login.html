@@ -1,20 +1,31 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Papertrail · Demo bookstore</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<title>Papertrail · Demo bookstore</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='interaction.js') }}" defer></script></head>
 <body><main>
   <p class="eyebrow">PAPERTRAIL / SYNTHETIC DEMO</p><h1>A good book.<br>A fresh perspective.</h1>
   <p>Sign into the demonstration bookstore. The synthetic account name is <code>reader</code>; use the password configured by your local operator.</p>
   {% for message in get_flashed_messages() %}<p role="status" class="notice">{{ message }}</p>{% endfor %}
   {% if signed_in %}
   <h2>Welcome back, reader.</h2>
+  <p><a href="{{ url_for('monitoring') }}">Local operator: delivery status</a></p>
   <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button>Sign out</button></form>
   {% else %}
-  <form method="post" action="{{ url_for('login') }}">
+  <section class="consent" aria-labelledby="consent-heading">
+    <h2 id="consent-heading">Optional interaction measurements</h2>
+    <p>If enabled, we send counts of pointer activity and time to submit, not typed text or your mouse path. Login works without this.</p>
+    <p id="consent-status" role="status">Optional collection is off.</p>
+    <button type="button" id="enable-interaction">Enable measurements</button>
+    <button type="button" id="disable-interaction">Continue without measurements</button>
+  </section>
+  <form id="login-form" method="post" action="{{ url_for('login') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="interaction" id="interaction-summary" value="">
     <label>Username<input name="username" autocomplete="username" maxlength="128" required></label>
     <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
     <button>Sign in</button>
   </form>
   {% endif %}
-  <aside>Login outcomes, a pseudonymous account identifier, source IP, and backend duration are sent to your local ThreatWatch instance. Passwords are never included. Browser interaction collection is not enabled in this milestone.</aside>
+  <aside>Login outcomes, a pseudonymous account identifier, source IP, and backend duration are reported regardless of optional measurement consent. Passwords are never included. Browser summaries are unverified supporting signals, not proof of automation.</aside>
 </main></body></html>

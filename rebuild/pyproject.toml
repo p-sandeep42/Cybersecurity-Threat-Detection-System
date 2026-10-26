@@ -1,6 +1,7 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = ["browser: real Chromium UI and accessibility verification (requires RUN_BROWSER_TESTS=1)"]
 
 [tool.ruff]
 target-version = "py313"

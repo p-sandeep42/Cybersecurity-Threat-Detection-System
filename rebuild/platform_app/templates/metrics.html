@@ -1,12 +1,34 @@
 {% extends 'base.html' %}
 {% block content %}
 <p class="eyebrow">APPLICATION OVERVIEW</p><h1>{{ application.name }}</h1>
-<p class="muted">{% if last_received %}Last event received: {{ last_received }} UTC{% else %}No events received. Open Connection settings to integrate your backend.{% endif %}</p>
 {% include 'filters.html' %}
+<div id="live-content" data-refresh-area>
+<p class="muted">{% if last_received %}Last event received: {{ last_received }} UTC{% else %}No events received. Open Connection settings to integrate your backend.{% endif %}</p>
 <section class="grid">{% for label, value in stats.items() %}<article class="panel metric"><span>{{ label }}</span><strong>{{ value }}</strong></article>{% endfor %}</section>
 <section class="panel"><h2>Backend response duration · /login</h2>
 <p>p50: <strong>{{ p50 if p50 is not none else 'N/A' }}</strong> ms · p95: <strong>{{ p95 if p95 is not none else 'N/A' }}</strong> ms</p>
 <p class="muted">{{ sample_count }} samples{% if sample_count < 20 %} · Small sample{% endif %}. Backend handling time excludes network delivery. Latency does not increase threat scores.</p>
 </section>
-<p class="muted">Browser interaction collection and automation indicators are a later milestone. Refresh this page to update the overview.</p>
+<section class="panel">
+  <h2>Visitor interaction timing</h2>
+  <p>Browser-reported, unverified. These durations measure visitor interaction, not backend or network response time.</p>
+  <p>{{ interaction_stats.opted_in }} opted-in summaries · {{ interaction_stats.missing }} unavailable · {{ interaction_stats.interrupted }} visibility-interrupted (excluded)</p>
+  <dl class="timing-grid">
+    <div><dt>Time to submit</dt><dd>p50: {{ interaction_stats.submit_p50 if interaction_stats.submit_p50 is not none else 'N/A' }} ms · p95: {{ interaction_stats.submit_p95 if interaction_stats.submit_p95 is not none else 'N/A' }} ms</dd>
+      <dd>{{ interaction_stats.submit_samples }} samples{% if interaction_stats.submit_samples < 20 %} · Small sample{% endif %}</dd></div>
+    <div><dt>Time to first interaction</dt><dd>p50: {{ interaction_stats.first_p50 if interaction_stats.first_p50 is not none else 'N/A' }} ms · p95: {{ interaction_stats.first_p95 if interaction_stats.first_p95 is not none else 'N/A' }} ms</dd>
+      <dd>{{ interaction_stats.first_samples }} samples{% if interaction_stats.first_samples < 20 %} · Small sample{% endif %}</dd></div>
+  </dl>
+  <p class="muted">Missing summaries are unknown, not zero. Pointer counts alone never trigger an alert.</p>
+</section>
+<section class="panel">
+  <h2>Event delivery</h2>
+  <div class="grid">{% for label, count in delivery.items() %}
+    <div class="metric"><span>{{ label|title }}</span><strong>{{ count }}</strong></div>
+  {% endfor %}</div>
+  <p class="muted">HTTP outcomes received during the selected time range, across all accounts and outcomes in this application. Counts begin after the counters migration; older events are not backfilled. Invalid/revoked keys cannot be attributed. Storage outages may prevent counter recording.</p>
+  <p class="muted">Demo queue, retry and drop counters are available in the bookstore's signed-in local operator Delivery status view.</p>
+</section>
+</div>
+{% include 'refresh.html' %}
 {% endblock %}

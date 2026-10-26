@@ -1,6 +1,6 @@
 """Reconcile deterministic incidents while preserving human investigation work."""
 
-from sqlalchemy import delete, or_, select, update
+from sqlalchemy import and_, delete, or_, select, update
 
 from platform_app.detection import evaluate
 from platform_app.models import Alert, AlertEvent, AuditEntry, Event, Note
@@ -12,7 +12,17 @@ def reconcile(database, app_id: str, incoming: Event) -> list[str]:
         database.scalars(
             select(Event).where(
                 Event.app_id == app_id,
-                or_(Event.subject_id == incoming.subject_id, Event.source_ip == incoming.source_ip),
+                or_(
+                    Event.subject_id == incoming.subject_id,
+                    # A successful login cannot change an IP failure-only rule.
+                    # Avoid loading every benign event behind a shared NAT address.
+                    and_(
+                        incoming.outcome == "failure",
+                        Event.outcome == "failure",
+                        Event.source_ip == incoming.source_ip,
+                    ),
+                    Event.session_id == incoming.session_id,
+                ),
             )
         )
     )
@@ -24,7 +34,12 @@ def reconcile(database, app_id: str, incoming: Event) -> list[str]:
                 episode.rule_id in {"AUTH-001", "AUTH-003"}
                 and episode.entity_key == incoming.subject_id
             )
-            or (episode.rule_id == "AUTH-002" and episode.entity_key == incoming.source_ip)
+            or (
+                incoming.outcome == "failure"
+                and episode.rule_id == "AUTH-002"
+                and episode.entity_key == incoming.source_ip
+            )
+            or (episode.rule_id == "BOT-001" and episode.entity_key == incoming.session_id)
         )
     ]
     internal_ids = {event.event_id: event.id for event in events}

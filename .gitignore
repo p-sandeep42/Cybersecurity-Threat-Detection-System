@@ -10,3 +10,4 @@ __pycache__/
 rebuild/instance/
 .coverage
 htmlcov/
+node_modules/

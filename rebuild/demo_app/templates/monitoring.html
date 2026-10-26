@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Papertrail · Delivery status</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='monitoring.js') }}" defer></script>
+</head>
+<body><main>
+  <h1>Delivery status</h1>
+  <p>Local operator view. These counters reset when the demo process restarts.</p>
+  <dl>{% for name, count in counters.items() %}
+    <dt>{{ name|title }}</dt><dd data-counter="{{ name }}">{{ count }}</dd>
+  {% endfor %}</dl>
+  <p>Waiting in queue: <strong id="queue-size">{{ queue_size }}</strong></p>
+  <p>Background worker: <strong id="worker-status">{{ 'Running' if worker_alive else 'Stopped' }}</strong></p>
+  <p id="refresh-status" role="status">Updates every five seconds while visible.</p>
+  <p>Queued means accepted into the sender queue; sent means acknowledged by the platform.
+     Retried counts additional attempts. Dropped events are not stored in ThreatWatch.</p>
+  <a href="{{ url_for('login') }}">Return to bookstore</a>
+</main></body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "threatwatch-browser-verification",
+  "private": true,
+  "description": "Development-only accessibility checks; no frontend build step.",
+  "devDependencies": { "axe-core": "^4.10.0" }
+}

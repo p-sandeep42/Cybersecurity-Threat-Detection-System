@@ -17,6 +17,7 @@ from platform_app.models import (
     Application,
     AuditEntry,
     Event,
+    IngestionReceipt,
     Note,
     utc_now,
 )
@@ -353,6 +354,40 @@ def metrics(app_id):
         select(func.max(Event.received_at)).where(Event.app_id == app_id)
     )
     durations = [event.response_duration_ms for event in records]
+    summaries = [
+        event.payload["interaction"] for event in records if event.payload.get("interaction")
+    ]
+    usable = [summary for summary in summaries if not summary["visibility_interrupted"]]
+    submissions = [summary["submit_elapsed_ms"] for summary in usable]
+    first_interactions = [
+        summary["first_interaction_ms"]
+        for summary in usable
+        if summary["first_interaction_ms"] is not None
+    ]
+    interaction_stats = {
+        "opted_in": len(summaries),
+        "missing": len(records) - len(summaries),
+        "interrupted": len(summaries) - len(usable),
+        "submit_samples": len(submissions),
+        "first_samples": len(first_interactions),
+        "submit_p50": percentile(submissions, 0.5),
+        "submit_p95": percentile(submissions, 0.95),
+        "first_p50": percentile(first_interactions, 0.5),
+        "first_p95": percentile(first_interactions, 0.95),
+    }
+    delivery = {"accepted": 0, "duplicate": 0, "rejected": 0}
+    delivery.update(
+        dict(
+            database.execute(
+                select(IngestionReceipt.outcome, func.count())
+                .where(
+                    IngestionReceipt.app_id == app_id,
+                    IngestionReceipt.received_at.between(start, end),
+                )
+                .group_by(IngestionReceipt.outcome)
+            ).all()
+        )
+    )
     stats = {
         "Login events": len(records),
         "Failed logins": sum(event.outcome == "failure" for event in records),
@@ -363,6 +398,9 @@ def metrics(app_id):
             {alert.entity_key for alert in active if alert.rule_id in {"AUTH-001", "AUTH-003"}}
         ),
         "Flagged IPs": len({alert.entity_key for alert in active if alert.rule_id == "AUTH-002"}),
+        "Flagged sessions": len(
+            {alert.entity_key for alert in active if alert.rule_id == "BOT-001"}
+        ),
     }
     return render_template(
         "metrics.html",
@@ -374,4 +412,6 @@ def metrics(app_id):
         sample_count=len(durations),
         p50=percentile(durations, 0.5),
         p95=percentile(durations, 0.95),
+        interaction_stats=interaction_stats,
+        delivery=delivery,
     )

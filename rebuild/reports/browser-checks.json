@@ -1,0 +1,59 @@
+{
+  "browser": "Chromium / chrome",
+  "audits": [
+    {
+      "url_path": "login",
+      "violations": 0,
+      "passed_rules": 13,
+      "manual_review_items": 0
+    },
+    {
+      "url_path": "applications/982f1947-0095-4a03-847b-8ecf17a5319e/metrics",
+      "violations": 0,
+      "passed_rules": 23,
+      "manual_review_items": 0
+    },
+    {
+      "url_path": "login",
+      "violations": 0,
+      "passed_rules": 20,
+      "manual_review_items": 0
+    },
+    {
+      "url_path": "applications/982f1947-0095-4a03-847b-8ecf17a5319e/metrics",
+      "violations": 0,
+      "passed_rules": 23,
+      "manual_review_items": 0
+    },
+    {
+      "url_path": "applications/982f1947-0095-4a03-847b-8ecf17a5319e/alerts",
+      "violations": 0,
+      "passed_rules": 23,
+      "manual_review_items": 0
+    },
+    {
+      "url_path": "applications/982f1947-0095-4a03-847b-8ecf17a5319e/alerts/2dcc1802-b90a-4266-a522-a5d2368399d0",
+      "violations": 0,
+      "passed_rules": 22,
+      "manual_review_items": 0
+    },
+    {
+      "url_path": "applications/982f1947-0095-4a03-847b-8ecf17a5319e/metrics",
+      "violations": 0,
+      "passed_rules": 23,
+      "manual_review_items": 0
+    }
+  ],
+  "javascript_errors": [],
+  "checks": [
+    "No summary before consent",
+    "Opt-in submits only allowed aggregates",
+    "Opt-out clears collection",
+    "Consent survives same-tab navigation",
+    "Keyboard skip link",
+    "Refresh preserves filter edits",
+    "Refresh can be paused",
+    "390px layout has no page-level horizontal overflow"
+  ],
+  "limits": "These automated checks are not a full accessibility certification."
+}

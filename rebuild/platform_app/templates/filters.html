@@ -5,11 +5,11 @@
   <label>Exact source IP<input name="ip" value="{{ request.args.get('ip', '') }}"></label>
   {% if request.endpoint == 'dashboard.alerts' %}
   <label>Status<select name="status"><option value="">All</option>{% for status in ['Open','Investigating','Resolved'] %}<option {{ 'selected' if request.args.get('status') == status }}>{{ status }}</option>{% endfor %}</select></label>
-  <label>Severity<select name="severity"><option value="">All</option>{% for severity in ['High','Critical'] %}<option {{ 'selected' if request.args.get('severity') == severity }}>{{ severity }}</option>{% endfor %}</select></label>
-  <label>Rule<select name="rule"><option value="">All</option>{% for rule in ['AUTH-001','AUTH-002','AUTH-003'] %}<option {{ 'selected' if request.args.get('rule') == rule }}>{{ rule }}</option>{% endfor %}</select></label>
+  <label>Severity<select name="severity"><option value="">All</option>{% for severity in ['Medium','High','Critical'] %}<option {{ 'selected' if request.args.get('severity') == severity }}>{{ severity }}</option>{% endfor %}</select></label>
+  <label>Rule<select name="rule"><option value="">All</option>{% for rule in ['AUTH-001','AUTH-002','AUTH-003','BOT-001'] %}<option {{ 'selected' if request.args.get('rule') == rule }}>{{ rule }}</option>{% endfor %}</select></label>
   {% else %}
   <label>Outcome<select name="outcome"><option value="">All</option>{% for outcome in ['success','failure'] %}<option {{ 'selected' if request.args.get('outcome') == outcome }}>{{ outcome }}</option>{% endfor %}</select></label>
   {% endif %}
   <button>Apply filters</button><a href="{{ request.path }}">Reset</a>
 </form>
-<p class="muted">{{ start }} to {{ end }} · UTC</p>
+<p class="muted" data-time-range>{{ start }} to {{ end }} · UTC</p>
